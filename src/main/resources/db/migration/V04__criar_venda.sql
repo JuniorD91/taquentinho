@@ -1,0 +1,6 @@
+CREATE TABLE venda (
+  codigo BIGINT NOT NULL AUTO_INCREMENT,
+  data_venda DATETIME NOT NULL,
+  valor_lanche DECIMAL(10,2) NULL,
+  PRIMARY KEY (codigo))
+ENGINE = InnoDB DEFAULT CHARSET=utf8;

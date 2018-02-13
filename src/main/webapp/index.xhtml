@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Tá Quentinho</title>
+</h:head>
+<h:body>
+	<h:form id="formPrincipal">
+		<div class="ui-g ui-fluid">
+			<p:panel style="margin-top: 4%; width: 100%;">
+				<p:tabView id="tabViewVenda">
+					<p:tab title="Venda">
+						<p:panelGrid columns="2" cellpadding="10" layout="grid"
+							id="gridVendaComprovante"
+							columnClasses="ui-grid-col-4, ui-grid-col-8">
+							<p:column>
+								<p:outputPanel deferred="true"
+									style="border: ridge; background-color: #FFFEAF; padding-bottom: 100%;">
+									<h3 style="text-align: center;">CUPOM FISCAL</h3>
+									<p:dataTable value="#{compraBean.lancheComprovante}"
+										var="lanche" selectionMode="single"
+										emptyMessage="Nenhum lanche selecionado."
+										rowKey="#{lanche.codigo}"
+										selection="#{compraBean.selectLanche}">
+										<p:ajax event="rowSelect" update="formPrincipal:ingrediente" 
+											listener="#{compraBean.linhaSelecionado}"
+											oncomplete="PF('dlgIngrediente').show();" />
+										<p:column rendered="false">
+											<h:outputText value="#{lanche.codigo}" />
+										</p:column>
+										<p:column>
+											<h:outputText value="#{lanche.descricao}" />
+										</p:column>
+										<p:column>
+											<h:outputText style="margin-left: 50%;"
+												value="R$ #{lanche.valor}" />
+										</p:column>
+									</p:dataTable>
+									<p style="padding-left: 60%;">TOTAL R$ #{compraBean.valorTotal}</p>
+								</p:outputPanel>
+								<p:spacer height="10" />
+								<p:commandButton value="Finalizar venda" />
+							</p:column>
+							<p:column>
+								<p:fieldset legend="Lanches" toggleable="true">
+									<p:dataGrid var="lanche" value="#{compraBean.lanches}"
+										columns="3" layout="grid" rows="12" paginator="true"
+										id="idLanche"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										rowsPerPageTemplate="6,12,16">
+										<h:panelGrid columns="1" style="width:100%;text-align:center;">
+											<p:spacer width="10" />
+											<p:commandLink action="#{compraBean.adicionarLanche()}"
+												update="formPrincipal:tabViewVenda">
+												<f:setPropertyActionListener value="#{lanche}"
+													target="#{compraBean.lanche}" />
+												<p:graphicImage url="#{lanche.url}" />
+											</p:commandLink>
+											<h:outputText value="#{lanche.descricao}"
+												style="font-weight:bold;" />
+											<p:spacer width="10" />
+										</h:panelGrid>
+									</p:dataGrid>
+								</p:fieldset>
+								<p:spacer height="10" />
+
+							</p:column>
+						</p:panelGrid>
+					</p:tab>
+				</p:tabView>
+			</p:panel>
+		</div>
+		<p:dialog id="ingrediente" widgetVar="dlgIngrediente"
+			header="Adicional #{compraBean.selectLanche.descricao}"
+			resizable="false" showEffect="clip" hideEffect="clip">
+			<p:scrollPanel mode="native" style="width:100%;height:550px">
+			<p:panelGrid columns="2" layout="grid">
+				<p:fieldset legend="Ingrediente">
+						<p:dataTable var="dialogIngrediente" 
+							value="#{compraBean.ingredientes}" id="dialogIngredienteTable"
+							emptyMessage="Nenhum ingrediente foi efncontrado.">
+							<p:column>
+								<h:outputText value="#{dialogIngrediente.descricao}" />
+							</p:column>
+							<p:column>
+								<h:outputText value="#{dialogIngrediente.valor}" />
+							</p:column>
+							<p:column headerText="ações">
+								<p:commandButton value="excluir" style="text-align: center;" update="formPrincipal:dialogIngredienteTable  formPrincipal"
+									actionListener="#{compraBean.removerIngrediente(dialogIngrediente)}" />
+							</p:column>
+						</p:dataTable>
+					</p:fieldset>
+				<p:fieldset legend="Ingrediente adicional">
+					<p:dataTable var="dialogAdicional" id="idDialogAdicional"
+						value="#{compraBean.selectLanche.ingredientesAdicionais}"
+						emptyMessage="Nenhum Adicional foi encontrado">
+						<p:column>
+							<h:outputText value="#{dialogAdicional.descricao}" />
+						</p:column>
+						<p:column>
+							<h:outputText value="#{dialogAdicional.valor}" />
+						</p:column>
+						<p:column headerText="Ações">
+							<p:commandButton value="excluir" actionListener="#{compraBean.removerAdicional(dialogAdicional)}" update="formPrincipal:idDialogAdicional formPrincipal"/>
+						</p:column>
+					</p:dataTable>
+				</p:fieldset>
+			</p:panelGrid>
+			<p:spacer height="10" />
+			
+				<p:fieldset legend="Ingrediente" toggleable="true">
+					<p:dataGrid var="ingrediente"
+						value="#{compraBean.todosIngrediente}" columns="3" layout="grid"
+						rows="12" paginator="true" id="idIngrediente"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="6,12,16">
+						<h:panelGrid columns="1" style="width:100%;text-align:center;">
+							<p:spacer width="10" />
+							<p:commandLink action="#{compraBean.adicionarIngrediente()}"
+								update="formPrincipal:idDialogAdicional formPrincipal">
+								<f:setPropertyActionListener value="#{ingrediente}"
+									target="#{compraBean.ingrediente}" />
+								<p:graphicImage url="#{ingrediente.url}" />
+							</p:commandLink>
+							<h:outputText value="#{ingrediente.descricao}"
+								style="font-weight:bold;" />
+							<p:spacer width="10" />
+						</h:panelGrid>
+					</p:dataGrid>
+				</p:fieldset>
+			</p:scrollPanel>
+		</p:dialog>
+	</h:form>
+</h:body>
+</html>
