@@ -10,6 +10,7 @@ import com.indra.taquentinho.model.dominio.Ingrediente;
 import com.indra.taquentinho.model.dominio.Lanche;
 import com.indra.taquentinho.model.dominio.Venda;
 import com.indra.taquentinho.model.negocio.IngredienteNegocio;
+import com.indra.taquentinho.util.exception.DaoException;
 
 @Service
 public class LancheNegocioQueryImpl implements LancheNegocioQuery {
@@ -31,16 +32,11 @@ public class LancheNegocioQueryImpl implements LancheNegocioQuery {
 	
 	@Override
 	@Transactional
-	public List<Lanche> findAll() {
+	public List<Lanche> findAll() throws DaoException {
 		return lancheDAOQuery.findAll();
 	}
 
-	@Override
-	@Transactional(rollbackFor=Exception.class)
-	public Venda adicionarLanche() {
-		return null;
-	}
-
+	
 	@Override
 	public Venda adicionarLanche(Lanche lanche, List<Lanche> lancheComprovante) {
 		// TODO Auto-generated method stub
@@ -48,7 +44,7 @@ public class LancheNegocioQueryImpl implements LancheNegocioQuery {
 	}
 
 	@Override
-	public List<Ingrediente> buscarIngrediente(Lanche lanche) {
+	public List<Ingrediente> buscarIngrediente(Lanche lanche) throws DaoException {
 		return ingredienteDAO.buscarIngrediente(lanche.getCodigo());
 	}
 

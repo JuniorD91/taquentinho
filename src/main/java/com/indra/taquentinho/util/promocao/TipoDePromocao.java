@@ -5,6 +5,7 @@ import static com.indra.taquentinho.util.enums.IngredientesEnum.QUEIJO;
 
 import com.indra.taquentinho.model.dominio.Ingrediente;
 import com.indra.taquentinho.model.dominio.Lanche;
+import com.indra.taquentinho.util.exception.VisaoException;
 enum TipoDePromocao {
 
 	LIGHT(1L) {
@@ -42,14 +43,14 @@ enum TipoDePromocao {
 
 	abstract Lanche valid(Lanche lanche, Ingrediente ingrediente);
 
-	static Lanche percorrerIsCheckPromocao(Lanche lanche,Ingrediente ingrediente) throws Exception {
+	static Lanche percorrerIsCheckPromocao(Lanche lanche,Ingrediente ingrediente) throws VisaoException {
 		try {
-			for (TipoDePromocao promocao : MUITO_QUEIJO.values()) {
+			for (TipoDePromocao promocao : TipoDePromocao.values()) {
 				promocao.valid(lanche, ingrediente);
 			}
 			lanche.getIngredientesAdicionais().add(ingrediente);
-		} catch (Exception e) {
-			throw new Exception();
+		} catch (VisaoException e) {
+			throw new VisaoException("Ocorreu algum erro ao percorrer as promoções.");
 		}
 		return lanche;
 	}
